@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1">
+		<title>login</title>
+		<link rel ='stylesheet' href = "{% static 'css_js/bootstrap.min.css' %}">
+		<script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
+		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+		<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+		<style>
+			*{
+				padding: 0px;
+				margin: 0px;
+				box-sizing: border-box;
+			}
+		</style>
+		<script>
+			$(document).ready(function(){
+				
+					
+			function load_next_article(next_id=''){
+
+        var current_id = $('#article_id').val();
+        document.getElementById('input_div').innerHTML = "";
+        console.log("Current ID: ", current_id);
+
+        $.ajax({
+            data: {'current_id': current_id, 'next_id': next_id, 'task_name': 'sr'},
+            dataType: 'json',
+            url: "{% url 'find_next_id' %}",
+            type: "POST",
+            async: false,
+            success: function (response) {
+            	
+                        
+               	$('.change').html(`<pre>${JSON.stringify(response, null, 2)}</pre>`);
+                
+
+                //Removing the btn classes for all the ids
+                
+
+            },
+            error: function(err){
+                console.log(err);
+                sweet_alert('Unable to load the data!', 'error');
+            }
+        });
+    }
+
+		</script>
+	</head>
+	<body>
+		<h1 class="text-center">Login</h1>
+		<div class="row">
+            <div class="col-sm-3 col-md-2 col-lg-1">
+                <div class="buttons" style=" height:100vh; overflow-y: scroll; overflow-x: hidden; border:2px solid black;">
+                    {%for data in datas%}
+                        <button class="btn btm-sm btn-primary mt-1" id='article_{{ data.set_id }}' onclick="load_next_article('{{ data.set_id }}')" style="font-size: 11px; width:100%;">{{ data.wb_display }}</button><br>
+                    {%endfor%}
+                </div>
+            </div>   
+            <div class = 'col-sm-9 col-md-10 col-lg-11'>
+            	<div class="heading mb-5"><h1><span id="article_id">{{set_id}}</span> question number and ask to figure out</h1></div>
+            	<div class="questions" id='quedata'></div>
+            	<p class="change"></p>
+            	<hr>
+            	<div class="row" id='choose'>
+            		<div class="col-sm-6">
+            			<div class="mostreleated">
+            				<h4 class="text-center">Most Releated Pair</h4>
+            			</div>
+            		</div>
+            		<div class="col-sm-6">
+            			<div class="leastreleated">
+            				<h4 class="text-center">Least Releated Pair</h4>
+            			</div>
+            		</div>
+            	</div>
+            	<hr>
+                <button class="save">Start Annotation</button>
+            </div> 
+        </div>
+		
+		{% for message in messages %}
+		<h1>{{message}}</h1>
+		{% endfor %}
+	</body>
+</html>

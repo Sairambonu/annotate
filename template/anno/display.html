@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Display Data</title>
+    <link rel="stylesheet" href="{% static 'css_js/bootstrap.min.css' %}">
+    <script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+    </style>
+      
+</head>
+<body>
+    <h1 class="text-center">Data Display</h1>
+    {% if user.is_authenticated %}
+        {% if user.role == 'coordinator' %}
+            <a href="{% url 'upload' %}">upload file</a>
+        {%endif%}
+        <a href="{% url 'predisplay' 2%}">predisplay</a>
+    {%endif%}
+</body>
+
+</html>
+
+
+

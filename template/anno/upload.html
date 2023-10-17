@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Upload File</title>
+    <link rel="stylesheet" href="{% static 'css_js/bootstrap.min.css' %}">
+    <script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+    </style>
+
+</head>
+<body>
+    <h1 class="text-center">Upload File</h1>
+    {% for message in messages %}
+    <p>{{message}}</p>
+    {%endfor%}
+    <div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {%csrf_token%}
+        <div>
+            <label class="form-label mt-3" for='upload'>Upload File</label>
+            <input type="File" name="upload" accept=".jsonl" class="form-control" id='upload'>
+        </div>
+        
+        <div>
+            <label class="form-label mt-3">taskname</label>
+            <input type="text" name="task_name" class="form-control">
+        </div>
+        <div>
+            <label class="form-label mt-3">setname</label>
+            <input type="text" name="set_name" class="form-control">
+        </div>
+        <div>
+            <label class="form-label mt-3">language</label>
+            <select name="languageSelect" id="languageSelect">
+                <option value="" disabled selected>Select a language</option>
+                <option value="hindi">Hindi</option>
+                <option value="telugu">Telugu</option>
+                <option value="marathi">Marathi</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label mt-3">Choose user email</label>
+            <select name="user_email" id="userEmailSelect" disabled>
+                <option>select user</option>
+                <!-- Options will be populated dynamically using JavaScript -->
+            </select>
+        </div>
+        <div>
+            <label class="form-label mt-3">deadline</label>
+            <input type="datetime-local" name="deadline" >
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div>
+    <script>
+        $(document).ready(function () {
+            $('#languageSelect').change(function () {
+                var selectedLanguage = $(this).val();
+                if (selectedLanguage) {
+                    // Make an AJAX request to fetch user emails based on the selected language
+                    $.ajax({
+                        type: 'GET',
+                        url: '/annotate/get_emails/',
+                        data: { language: selectedLanguage },
+                        success: function (data) {
+                            var userEmailSelect = $('#userEmailSelect');
+                            userEmailSelect.empty();  // Clear existing options
+                            $.each(data.user_emails, function (index, value) {
+                                userEmailSelect.append($("<option></option>")
+                                    .attr("value", value)
+                                    .text(value));
+                            });
+                            userEmailSelect.prop('disabled', false);  // Enable the select
+                        },
+                        error: function () {
+                            // Handle any errors or display a message to the user
+                            console.log('no data found');
+                        }
+                    });
+
+                } else {
+                    // If no language is selected, clear and disable the user email select
+                    $('#userEmailSelect').empty().prop('disabled', true);
+                }
+            });
+        });
+    </script>
+    
+</body>
+
+</html>
+    <!-- <script >
+        $(document).ready(function(){
+            $('#languageSelect').change(function(){
+                var selected_value = $(this).val()
+
+            })
+        })
+    </script>
+</head>
+<body>
+    <h1 class="text-center">Upload File</h1>
+    <form method="post" enctype="multipart/form-data">
+        <div>
+            <label class="form-label">Upload File</label>
+            <input type="File" name="upload" accept=".jsonl">
+        </div>
+        <div>
+            <label class="form-label">language</label>
+            <select name='language' id="languageSelect">
+                <option value="" disabled selected>Select a language</option>
+                <option value="hindi" name='language'>hindi</option>
+                <option value="telugu" name='language'>telugu</option>
+                <option value="marathi" name='language'>marathi</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label">taskname</label>
+            <input type="text" name="task_name">
+        </div>
+        <div>
+            <label class="form-label">setname</label>
+            <input type="text" name="set_name">
+        </div>
+        <div>
+            <label class="form-label">choose user_email</label>
+            <select name="user_email" id="userEmailSelect">
+                {% for lang in lang_type %}
+                <option value="hindi" name='user_email'>{{lang}}</option>
+                {%endfor%}
+                
+            </select>
+        </div>
+        <div>
+            <label class="form-label">deadline</label>
+            <input type="datetime-local" name="set_name">
+        </div>
+        
+    </form>
+    
+</body>
+
+</html> -->
+
+
+

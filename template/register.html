@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>register</title>
+    <link rel="stylesheet" href="{% static 'css_js/bootstrap.min.css' %}">
+    <script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+    </style>
+      
+</head>
+<body>
+    <div class="container">
+    <h2>Create an Account</h2>
+    <form method="post">
+      {% csrf_token %}
+      {{ form.as_p }}
+      <!-- <div class="form-group">
+        <label class="form-label" for="user_role">User Role</label>
+        <select class="form-control"  id="user_role" name="user_role">
+            <option value="annotator">annotator</option>
+            <option value="evaluator">evaluator</option>
+            <option value="coordinator">coordinator</option>
+        </select>
+      </div>
+      <div class="form-group">
+        <input class="form-input" type="text" id="contact" name="contact" placeholder="Enter Mobile No">
+        <label class="form-label" for="contact">Mobile No</label>
+      </div> -->
+      <button type="submit" class="btn btn-primary">Create User</button>
+    </form>
+    <p>Already have an account? <a href="{% url 'login' %}">Login</a></p>
+  </div>
+</body>
+
+</html>
