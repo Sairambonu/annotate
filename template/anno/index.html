@@ -1,0 +1,31 @@
+{%extends 'base.html'%}
+  {% block content %}
+    <h1 class="text-center">datasets to process</h1>
+    <table class="table table-sm table-hover table-responsive-sm text-center">
+      <thead>
+        <th>Language</th>
+        <th>Task Name</th>
+        <!-- <th>FileName</th> -->
+        
+        <th>Deadline</th>
+        <th>Last Updated</th>
+        <th> status</th>
+        <th>Actions</th>
+      </thead>
+      <tbody>
+        {% for task in task_folders %}
+          <tr>
+            <td>{{ task.language }}</td>
+            <td>{{ task.task_name }}</td>
+            <!-- <td>{{ task.file_name }}</td> -->
+            
+            <td>{{ task.deadline }}</td>
+            <td>{{ task.last_updated }}</td>
+            
+            <td style="color:red;" >pending</td>
+            <td><a href="{% url 'predisplay' task.sno %}"><button class="btn btn-secondary btn-sm">Annotate</button></a></td>
+
+        {% endfor %}
+      </tbody>
+    </table>
+{% endblock %}

@@ -1,0 +1,35 @@
+{%extends 'base.html'%}
+  {% block content %}
+    <h1 class="text-center">datasets to process</h1>
+     <table  class="table table-responsive-sm table-striped table-hover table-bordered" style="overflow-y: scroll; width: 100%;">
+      <thead class="text-center">
+        <th>user_email</th>
+        <th>File Name</th>
+        <!-- <th>FileName</th> -->
+        <th>task_name</th>
+        <th>set_name</th>
+        <th>Deadline</th>
+        <th>Last Updated</th>
+        <th>status</th>
+        <th>download</th>
+      </thead>
+      <tbody>
+        {% for task in task_folders %}
+          <tr>
+            <td class="text-center">{{ task.username }}</td>
+            <td class="text-center">{{ task.dataset_path }}</td>
+            <!-- <td>{{ task.file_name }}</td> -->
+            <td class="text-center">{{ task.task_name }}</td>
+            <td class="text-center">{{ task.set_name }}</td>
+            <td class="text-center">{{ task.deadline }}</td>
+            <td class="text-center">{{ task.last_updated }}</td>
+            
+            <td style="color:red;" class="text-center" >pending</td>
+            <td class="text-center"><a href="{% url 'download_data' task.sno %}"><button class="btn btn-success">download</button></a></td>
+
+
+        {% endfor %}
+      </tbody>
+    </table>
+
+{% endblock %}

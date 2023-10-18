@@ -25,7 +25,10 @@
 		    	let lastClickedButton = `#article_${articleId}`;
 		    	let nextArticleId = null
 		    	let lengths = '{{ request.session.length }}'
+		    	let selectedMrPairs = {};
+		    	let selectedLrPairs = {};
 		    	const dict = {};
+
 		    	for (let i = 0; i < lengths; i++) {
     				if($(`#article_${i+1}`).hasClass('btn-success')){
     					dict[i]=1
@@ -64,6 +67,12 @@
 		                            
 		                //         `;
 		                setdata(data)
+		                if (selectedMrPairs[id]) {
+					        $(`#mroption${selectedMrPairs[id+1]}`).prop('checked', true);
+					    }
+					    if (selectedLrPairs[id + 1]) {
+					        $(`#lroption${selectedLrPairs[id + 1]}`).prop('checked', true);
+					    }
 		                // $('.change').html(htmlTemplate);
 		            },
 		            error: function (err) {
@@ -146,7 +155,10 @@
 		    		alert('both mrpair and lrpair are same choose different')
 		    		load_next_article(articleId-1);
 		    	}
+
 		    	else{
+		    		selectedMrPairs[articleId] = mrpairs; // Save the selected MR option for the current question
+        			selectedLrPairs[articleId] = lrpairs;
 			    	$.ajax({
 			    		data:{'mrpairs':mrpairs,'lrpairs':lrpairs,'wb_display':wb_display,'json_path':json_path},
 			    		url: "{% url 'savecall' %}",

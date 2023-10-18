@@ -1,25 +1,5 @@
-<!DOCTYPE html>
-{% load static %}
-<html>
-<head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Endpoints</title>
-    <link rel='stylesheet' href="{% static 'css_js/bootstrap.min.css' %}">
-    <script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
-    <style>
-        * {
-            padding: 0px;
-            margin: 0px;
-            box-sizing: border-box;
-        }
-    </style>
-    <script>
-    </script>
-</head>
-<body>
+{%extends 'base.html'%}
+  {% block content %}
     <div class="container">
         <h1 class="text-center">Endpoints</h1>
         {% if user.is_authenticated %}
@@ -28,8 +8,10 @@
             <a href="{% url 'change_password' %}">Change Password</a>
             <a href="{% url 'logout' %}">Logout</a>
             <a href="{% url 'display' %}">anno</a>
+            <a href="{% url 'indexs' %}">annotate</a>
             {% if user.role == 'coordinator'%}
             <a href="{% url 'manage_users' %}">manage_users</a>
+            <a href="{% url 'manage_datasets' %}">manage_datasets</a>
             {%endif%}
         {% else %}
             <a href="{% url 'login' %}">Login</a>
@@ -44,8 +26,7 @@
             </div>
         {% endfor %}
     </div>
-</body>
-</html>
+{% endblock %}
 
 
 <!-- if (articleId==lengths){

@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Endpoints</title>
+    <link rel='stylesheet' href="{% static 'css_js/bootstrap.min.css' %}">
+    <script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+    </style>
+    {% block style%}
+    {% endblock style%}
+    {% block include_script %}
+    {% endblock include_script%}
+    <script>
+    </script>
+</head>
+<body>
+    
+        <div class="navbar navbar-expand-lg" style="background-color: #1974D2;">
+            <button class="navbar-toggler" data-bs-toggle='collapse' data-bs-target='#non'>collapse</button>
+            <div class="collapse navbar-collapse " id='non'>
+                <ul class="navbar-nav ms-auto">
+                    {% if user.is_authenticated %}
+                        {% if user.role == 'coordinator'%}
+                            <li class="nav-item">
+                                <a class="nav-link text-white" href="{% url 'manage_users' %}">Tasks</a>
+                            </li>
+                        {%endif%}
+                        <li class="nav-item">
+                            <a class="nav-link text-white" href="{% url 'indexs' %}">Annotate Data</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" data-bs-toggle='dropdown' href=# role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white; font-weight: bold; border: 1px solid white; border-radius: 10px;">Guidelines</a>
+                            <ul class="dropdown-menu">
+                                <li class="dropdown-item"><a href="#">English</a></li>
+                                <li class="dropdown-item"><a href="#">Telugu</a></li>
+                                <li class="dropdown-item"><a href="#">Hindi</a></li>
+                            </ul>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link text-white" href=#>contact us</a>
+                        </li>
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle text-white" data-bs-toggle='dropdown' href=# role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="color: white; font-weight: bold; border: 1px solid white; border-radius: 10px;">{{user.username}}</a>
+                            <ul class="dropdown-menu dropdown-menu-end">
+                                <li class="dropdown-item"><a href="{% url 'profile' %}">Profile</a></li>
+                                <li class="dropdown-item"><a href="{% url 'change_password' %}">Change Password</a></li>
+                                <li class="dropdown-item"><a href="{% url 'profile_edit' %}">Edit Profile</a></li>
+                                <hr>
+                                <li class="nav-item">
+                                    <a class="nav-link" href="{% url 'logout' %}">Logout</a>
+                                </li>
+                            </ul>
+                        </li>
+                    {%endif%}
+                        
+                </ul>
+            </div>
+        </div> 
+        {% block content %}{% endblock content %}
+    
+</body>
+</html>

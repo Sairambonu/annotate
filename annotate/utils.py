@@ -1,8 +1,10 @@
 from os import path, listdir, stat
 import json
+import ast
 from django.core import serializers
 # from TeluguTokenizer.summ_quality_check import *
 from django.conf import settings
+from .models import Datasets
 
 SR_LABELS = ["set_id", "wb_display", "input", "output", "status", "start_time", "last_modified"]
 SR_INPUT_LABELS = ["pair_id", "sentence_a", "sentence_b"]
@@ -77,3 +79,57 @@ def read_jsonl(filename, return_ids=False, filter_ids=[], include_meta=False):
             entries.append(line)
         
     return entries, implicit_check
+
+
+def load_annotation_files(request):
+    stats = []
+    base = []
+    datasets = Datasets.objects.all()  # Retrieve the model instances directly
+
+    for dataset in datasets:
+        user_check = False
+
+        language = dataset.language
+        sno = dataset.sno  # Access the primary key directly
+        email = dataset.user_email
+        task_name = dataset.task_name
+        deadline = dataset.deadline
+        status = dataset.status
+        dataset_path = dataset.dataset_path
+
+        if email == request.user.email:
+            user_check = True
+
+        if user_check:
+            base.append({'sno': sno, 'email': email, 'language': language,
+                         'task_name': task_name, 'dataset_path': dataset_path, 'deadline': deadline, 'status': status})
+
+    return base
+
+# def load_annotation_files(request):
+#     stats=[]
+#     base=[]
+#     object_list = serializers.serialize("python", Datasets.objects.all())
+
+#     for object in object_list:
+#         user_check = False
+
+#         entry = object.get('fields','')
+#         language = entry.get('language', '')
+#         # sno = object.get('pk', '')
+#         sno = object['pk']
+#         email = entry.get('user_email','')
+#         task_name = entry.get('task_name','')
+#         deadline = entry.get('deadline','')
+#         status = entry.get('status','')
+#         dataset_path = entry.get('dataset_path','')
+
+#         if entry.get('user_email','')==request.user.email:
+#             user_check=True
+
+#         if user_check==True:
+#             base.append({'sno':entry.get('sno'),'email':email,'language':language,
+#                 'task_name':task_name,'dataset_path':dataset_path,'deadline':deadline,'status':status})
+
+#     return base
+
