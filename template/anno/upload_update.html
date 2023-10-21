@@ -52,10 +52,11 @@
             <div>
                 <label class="form-label mt-3">Choose user email</label>
                 <select name="user_email" id="userEmailSelect">
-                    {% for email in context.telugu %}
+                    {% for email in telugu %}
                         <option value="{{ email }}">{{ email }}</option>
                     {% endfor %}
                     <option value="" disabled selected>Select user email</option>
+                    <option value="='name">name</option>
                 </select>
             </div>
 

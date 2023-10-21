@@ -1,4 +1,7 @@
 {%extends 'base.html'%}
+  {% block title%}
+     <title>index</title>
+  {%endblock title%}
   {% block content %}
     <h1 class="text-center">datasets to process</h1>
     <table class="table table-sm table-hover table-responsive-sm text-center">
@@ -10,6 +13,7 @@
         <th>Deadline</th>
         <th>Last Updated</th>
         <th> status</th>
+        <th> sno</th>
         <th>Actions</th>
       </thead>
       <tbody>
@@ -23,6 +27,7 @@
             <td>{{ task.last_updated }}</td>
             
             <td style="color:red;" >pending</td>
+            <td>{{task.sno}}</td>
             <td><a href="{% url 'predisplay' task.sno %}" target="_blank"><button class="btn btn-primary btn-sm">Annotate</button></a></td>
 
         {% endfor %}

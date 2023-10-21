@@ -50,8 +50,8 @@ def register(request):
             user.role = form.cleaned_data['role']
             languages = form.cleaned_data.get('languages',[])
             email = form.cleaned_data.get('email')
-            # for lang in languages:
-            #     AnnotateLanguageUsers.objects.create(email=email,lang=lang)
+            for lang in languages:
+                AnnotateLanguageUsers.objects.create(email=email,lang=lang)
             user.save()
             username = form.cleaned_data.get('username')
             messages.success(request, 'Account created for {username}. You can now log in.')

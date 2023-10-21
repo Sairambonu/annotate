@@ -44,12 +44,12 @@
 		    function load_next_article(id) {
 		        // Calculate the fileid based on user interaction
 		        
-		    	fileid = '{{ request.session.dataset_id }}'
 		        $.ajax({
-		            url: `{% url 'nextpara' 2 %}`,
+		            url: `{% url 'nextpara' %}`,
 		            type: 'get',
 		            dataType: 'json',
 		            success: function (response) {
+		            	console.log(response.filename)
 		                const data = response.datas[id]; // Access the first item in the data array
 
 		                // const htmlTemplate = `

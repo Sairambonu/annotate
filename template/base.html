@@ -4,7 +4,8 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Endpoints</title>
+    {%block title%}
+    {%endblock title%}
     <link rel='stylesheet' href="{% static 'css_js/bootstrap.min.css' %}">
     <script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
@@ -32,7 +33,7 @@
                     {% if user.is_authenticated %}
                         {% if user.role == 'coordinator'%}
                             <li class="nav-item">
-                                <a class="nav-link text-white" href="{% url 'manage_datasets' %}">Manager Datasets</a>
+                                <a class="nav-link text-white" href="{% url 'manage_datasets' %}">Manage Datasets</a>
                             </li>
                         {%endif%}
                         <li class="nav-item">
@@ -54,8 +55,10 @@
                             <ul class="dropdown-menu dropdown-menu-end">
                                 <li class="dropdown-item"><a style="color: black; text-decoration: none;" href="{% url 'profile' %}">Profile</a></li>
                                 <li class="dropdown-item"><a style="color: black; text-decoration: none;" href="{% url 'change_password' %}">Change Password</a></li>
-                                <li class="dropdown-item"><a style="color: black; text-decoration: none;" href="{% url 'manage_users' %}">manage Users</a></li>
-                                <div class="dropdown-divider"></div>
+                                {% if user.role == 'coordinator'%}
+                                    <li class="dropdown-item"><a style="color: black; text-decoration: none;" href="{% url 'manage_users' %}">manage Users</a></li>
+                                    <div class="dropdown-divider"></div>
+                                {%endif%}
                                 <li class="nav-item">
                                     <a class="dropdown-item" href="{% url 'logout' %}">Logout</a>
                                 </li>

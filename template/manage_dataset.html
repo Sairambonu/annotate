@@ -1,4 +1,7 @@
 {%extends 'base.html'%}
+  {% block title%}
+     <title>manage_datasets</title>
+  {%endblock title%}
   {% block content %}
     <h1 class="text-center">datasets to process</h1>
     <a href="{% url 'upload' %}"><button class="btn btn-primary">Upload Dataset</button></a>

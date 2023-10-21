@@ -51,7 +51,7 @@ def upload(request):
 						deadline=deadline)
 
 					messages.success(request, 'File stored successfully!')
-					return redirect('manage_dataset')
+					return redirect('manage_datasets')
 				else:
 					messages.error(request, 'File storage failed!')
 			return render(request,'anno/upload.html')
@@ -64,26 +64,27 @@ def upload_update(request):
     context = {'telugu': [], 'hindi': [], 'marathi': []}
 
     if request.method == 'POST':
-        if hasattr(request, "user"):
-            use_email = request.user.email
-        else:
-            messages.info(request, "User session expired.")
-            return render(request, 'anno/upload_update.html', context)  # Return early
+	    if hasattr(request, "user"):
+	        use_email = request.user.email
+	    else:
+	        messages.info(request, "User session expired.")
+	        return render(request, 'anno/upload_update.html', context)  # Return early
 
-        if use_email is not None:
-            object_list = serializers.serialize('python', UserLoginInfo.objects.all())
-            for object in object_list:
-                entry = object.get('fields', {})
-                user_email = entry.get('email', '')
-                languages = ast.literal_eval(entry.get('languages', ''))
-                for lang in languages:
-                    if lang == 'telugu':
-                        context['telugu'].append(user_email)
-                    elif lang == 'hindi':
-                        context['hindi'].append(user_email)
-                    else:
-                        context['marathi'].append(user_email)
+	    if use_email is not None:
+	        object_list = serializers.serialize('python', UserLoginInfo.objects.all())
+	        for object in object_list:
+	            entry = object.get('fields', {})
+	            user_email = entry.get('email', '')
+	            languages = ast.literal_eval(entry.get('languages', ''))
+	            for lang in languages:
+	                if lang == 'telugu':
+	                    context['telugu'].append(user_email)
+	                elif lang == 'hindi':
+	                    context['hindi'].append(user_email)
+	                else:
+	                    context['marathi'].append(user_email)
 
+    # return JsonResponse(context)
     return render(request, 'anno/upload_update.html', context)
 
 
@@ -210,27 +211,28 @@ def get_emails(request):
     return JsonResponse({'user_emails':user_emails})
 
 def predisplay(request, fileid):
-	fileid = int(fileid)
+	sno = int(fileid)
+	request.session['sno'] = sno
 	context ={}
-	database_info = Datasets.objects.get(sno=fileid)
+	database_info = Datasets.objects.get(sno=sno)
 	filename = database_info.dataset_path
 	json_path = str(settings.BASE_DIR)+ "/static/datasets/"+str(filename)
 	context['articles'], implicit_check = read_jsonl(json_path, return_ids=True)
 	context['implicit_check'] = implicit_check
 	context['json_path'] = json_path
 	request.session['json_path'] = json_path
-	request.session['dataset_id'] = fileid
 	data = context['articles']
 	length = len(data)
 	request.session['length'] = length
+	# return JsonResponse({'data':data})
+	return render(request, 'anno/predisplay.html', context )
 
-	return render(request, 'anno/predisplay.html', context)
-
-def nextpara(request,fileid):
+def nextpara(request):
 	
-	fileid = int(fileid)
+	# sno = int(sno)
 	context ={}
-	database_info = Datasets.objects.get(sno=fileid)
+	sno = request.session.get('sno')
+	database_info = Datasets.objects.get(sno=sno)
 	filename = database_info.dataset_path
 	json_path = str(settings.BASE_DIR)+ "/static/datasets/"+str(filename)
 	datas, implicit_check = read_jsonl(json_path)

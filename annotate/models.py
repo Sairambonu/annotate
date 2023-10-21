@@ -12,10 +12,6 @@ class AnnotateLanguageUsers(models.Model):
     email = models.CharField(max_length=255, blank=True, null=True)
     lang = models.CharField(max_length=100, blank=True, null=True)
 
-    class Meta:
-        managed = False
-        db_table = 'your_table_name'
-        unique_together = (('email', 'lang'),)
 
 class Datasets(models.Model):
 	sno = models.AutoField(primary_key=True)
