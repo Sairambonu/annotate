@@ -40,9 +40,15 @@
                     <td class="text-center">{{ user.phone }}</td>
                     <td>{{ user.last_login }}</td>
                     <td class="text-center">{{ user.status }}</td>
-                    
-                    </td>
+                    {% if user.status == 'active' %}
+                      <td><a href="{% url 'act_deact' user.username %}"><button class="btn btn-danger">deactivate</button></a></td>
+                    {% else %}
+                      <td><a href="{% url 'act_deact' user.username %}"><button class="btn btn-primary">activate</button></a></td>
+                    {% endif %}
+
+                      
                   </tr>
+                    
                 {% endfor %}
               </tbody>
             </table>

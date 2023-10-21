@@ -6,9 +6,11 @@ urlpatterns = [
     path('login/', views.user_login, name='login'), # Use Django's built-in authentication views
     path('logout/', views.custom_logout, name='logout'),
     path('register/', views.register, name='register'),
+    path('contact/', views.contact, name='contact'),
     path('profile/', views.profile_view, name='profile'),
     path('profile_edit/', views.profile_edit, name='profile_edit'),
     path('change_password/', views.change_password, name='change_password'),
     path('manage_users/', views.manage_users, name='manage_users'),
     path('endpoint/', views.endpoint, name='endpoint'),
+    path('act_deact/<str:username>/', views.act_deact, name='act_deact'),
 ]

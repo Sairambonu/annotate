@@ -3,17 +3,19 @@ from django.contrib.auth import login, logout
 from django.contrib.auth.decorators import login_required
 from users.models import UserLoginInfo
 from django.contrib import messages
-from django.http import JsonResponse
+from django.http import JsonResponse, HttpResponse
 from django.conf import settings
 from .models import Datasets,AnnotateLanguageUsers
 from django.core import serializers
 import ast
 from .utils import *
+import os
+from time import gmtime, strftime
 from django.views.decorators.csrf import csrf_exempt
 # Create your views here.
 
 
-def indexs(request):
+def annotates(request):
 	context = {}
 	context['task_folders'] = load_annotation_files(request)
 	return render (request,'anno/index.html',context)
@@ -49,7 +51,7 @@ def upload(request):
 						deadline=deadline)
 
 					messages.success(request, 'File stored successfully!')
-					return redirect('display')
+					return redirect('manage_dataset')
 				else:
 					messages.error(request, 'File storage failed!')
 			return render(request,'anno/upload.html')
@@ -57,6 +59,132 @@ def upload(request):
 			messages.info(request, "User session expired.!")
 	return render(request,'anno/upload.html',)
 
+
+def upload_update(request):
+    context = {'telugu': [], 'hindi': [], 'marathi': []}
+
+    if request.method == 'POST':
+        if hasattr(request, "user"):
+            use_email = request.user.email
+        else:
+            messages.info(request, "User session expired.")
+            return render(request, 'anno/upload_update.html', context)  # Return early
+
+        if use_email is not None:
+            object_list = serializers.serialize('python', UserLoginInfo.objects.all())
+            for object in object_list:
+                entry = object.get('fields', {})
+                user_email = entry.get('email', '')
+                languages = ast.literal_eval(entry.get('languages', ''))
+                for lang in languages:
+                    if lang == 'telugu':
+                        context['telugu'].append(user_email)
+                    elif lang == 'hindi':
+                        context['hindi'].append(user_email)
+                    else:
+                        context['marathi'].append(user_email)
+
+    return render(request, 'anno/upload_update.html', context)
+
+
+
+# def upload_update(request):
+# 	context = {'telugu':[], 'hindi':[], 'marathi':[]}
+# 	if request.method=='POST':
+# 		context = {'telugu':[], 'hindi':[], 'marathi':[]}
+# 		file = request.FILES.get('upload')
+# 		language = request.POST.get('languageSelect')
+# 		task_name = request.POST.get('task_name')
+# 		set_name = request.POST.get('set_name')
+# 		user_emails = request.POST.getlist('user_email')
+# 		deadline = request.POST.get('deadline')
+# 		status = request.POST.get('status')
+# 		filename = file.name
+# 		json_path = str(settings.BASE_DIR)+ "/static/datasets/"+str(filename)
+# 		if hasattr(request, "user"):
+# 			use_email = request.user.email
+# 		else:
+# 			messages.info(request, "User session expired.!")
+		
+		
+# 		if use_email is not None:
+# 			object_list = serializers.serialize('python', UserLoginInfo.objects.all())
+# 			for object in object_list:
+# 				entry = object.get('fields',{})
+# 				user_email = entry.get('user_email','')
+# 				languages = ast.literal_eval(entry.get('languages', ''))
+# 				for lang in languages:
+# 					if lang=='telugu':
+# 						context['telugu'].append(user_email)
+# 					elif lang=='hindi':
+# 						context['hindi'].append(user_email)
+# 					else:
+# 						context['marathi'].append(user_email)
+# 			user_emails = ast.literal_eval(user_emails)
+# 			for email in user_emails:
+# 				datas = read_jsonl_str(file)
+# 				checkfile = write_as_jsonl(json_path,datas,order_display=True)
+# 				if checkfile:
+# 					Datasets.objects.create(dataset_path=filename, language=language, 
+# 						task_name=task_name, set_name=set_name, user_email=email, 
+# 						deadline=deadline)
+
+# 			return render(request,'anno/upload_update.html', context)
+# 		else:
+# 			messages.info(request, "User session expired.!")
+# 	return render(request,'anno/upload_update.html', context)
+
+
+# def upload_update(request):
+#     context = {'telugu': [], 'hindi': [], 'marathi': []}
+
+#     if request.method == 'POST':
+#         file = request.FILES.get('upload')
+#         language = request.POST.get('languageSelect')
+#         task_name = request.POST.get('task_name')
+#         set_name = request.POST.get('set_name')
+#         user_emails = request.POST.getlist('user_email')
+#         deadline = request.POST.get('deadline')
+#         status = request.POST.get('status')
+#         filename = file.name
+#         json_path = os.path.join(settings.BASE_DIR, "static", "datasets", filename)
+
+#         if request.user.is_authenticated:
+#         	logged_in_user_email = request.user.email
+#         else:
+#         	messages.info(request, "User session expired.")
+#         	return render(request, 'anno/upload_update.html', context)
+
+
+#         object_list = UserLoginInfo.objects.all()
+#         for obj in object_list:
+#         	user_email = obj.email
+#         	languages = obj.languages
+#         	if 'telugu' in languages:
+#         		context['telugu'].append(user_email)
+#         	elif 'hindi' in languages:
+#         		context['hindi'].append(user_email)
+#         	else:
+#         		context['marathi'].append(user_email)
+
+#         if logged_in_user_email:
+#         	datas = read_jsonl_str(file)
+#         	checkfile = write_as_jsonl(json_path, datas, order_display=True) 
+#         	if checkfile:
+#         		for email in user_emails:
+#         			Datasets.objects.create(
+#         				dataset_path=filename,
+#         				language=language,
+#         				task_name=task_name,
+#         				set_name=set_name,
+#         				user_email=email,
+#         				deadline=deadline
+#         			)
+#         		return redirect('display')
+#         	else:
+#         		messages.info(request, "User session expired.")
+
+#     return render(request,'anno/upload_update.html', context)
 def display(request):
 	return render(request,'anno/display.html')
 
@@ -219,6 +347,7 @@ def manage_datasets(request):
 				Marathi==lang
 
 		if Telugu is not None and Hindi is not None and Marathi is not None:
+			user_details = {}
 			for object in object_list:
 				entry = object.get('fields','')
 				sno = object.get('pk','')
@@ -229,14 +358,20 @@ def manage_datasets(request):
 					set_name =entry.get('set_name')
 					deadline =entry.get('deadline')
 					last_updated =entry.get('last_updated')
-					base.append({'username':username,'dataset_path':dataset_path,
+					if username not in user_details:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
 						'task_name':task_name,'set_name':set_name,'deadline':deadline,
-						'last_updated':last_updated})
-			context['task_folders']=base
+						'last_updated':last_updated,'sno':sno,}
+					if user_details[username]['sno']<sno:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
+						'task_name':task_name,'set_name':set_name,'deadline':deadline,
+						'last_updated':last_updated,'sno':sno,}
+			context['task_folders']=user_details.values()
 			return render(request,'manage_dataset.html',context)
 
 
 		elif Telugu is not None and Hindi is not None and Marathi is None:
+			user_details = {}
 			for object in object_list:
 				entry = object.get('fields','')
 				if entry.get('language')==Telugu or entry.get('language')==Hindi:
@@ -246,15 +381,22 @@ def manage_datasets(request):
 					set_name =entry.get('set_name')
 					deadline =entry.get('deadline')
 					last_updated =entry.get('last_updated')
-					base.append({'username':username,'dataset_path':dataset_path,
+					if username not in user_details:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
 						'task_name':task_name,'set_name':set_name,'deadline':deadline,
-						'last_updated':last_updated})
-			context['task_folders']=base
+						'last_updated':last_updated,'sno':sno,}
+					if user_details[username]['sno']<sno:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
+						'task_name':task_name,'set_name':set_name,'deadline':deadline,
+						'last_updated':last_updated,'sno':sno,}
+			context['task_folders']=user_details.values()
 			return render(request,'manage_dataset.html',context)
 
 		if Telugu is not None and Hindi is None and Marathi is not None:
+			user_details = {}
 			for object in object_list:
 				entry = object.get('fields','')
+				sno = object.get('pk', '')
 				if entry.get('language')==Telugu or entry.get('language')==Marathi:
 					username = entry.get('user_email')
 					dataset_path = entry.get('dataset_path')
@@ -264,10 +406,11 @@ def manage_datasets(request):
 					last_updated =entry.get('last_updated')
 					base.append({'username':username,'dataset_path':dataset_path,
 						'task_name':task_name,'set_name':set_name,'deadline':deadline,
-						'last_updated':last_updated})
-			context['task_folders']=base
+						'last_updated':last_updated,'sno': sno})
+			context['task_folders']=user_details.values()
 			return render(request,'manage_dataset.html',context)
 		elif Telugu is None and Hindi is not None and Marathi is not None:
+			user_details = {}
 			for object in object_list:
 				entry = object.get('fields','')
 				if entry.get('language')==Hindi or entry.get('language')==Marathi:
@@ -277,12 +420,18 @@ def manage_datasets(request):
 					set_name =entry.get('set_name')
 					deadline =entry.get('deadline')
 					last_updated =entry.get('last_updated')
-					base.append({'username':username,'dataset_path':dataset_path,
+					if username not in user_details:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
 						'task_name':task_name,'set_name':set_name,'deadline':deadline,
-						'last_updated':last_updated})
-			context['task_folders']=base
+						'last_updated':last_updated,'sno':sno,}
+					if user_details[username]['sno']<sno:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
+						'task_name':task_name,'set_name':set_name,'deadline':deadline,
+						'last_updated':last_updated,'sno':sno,}
+			context['task_folders']=user_details.values()
 			return render(request,'manage_dataset.html',context)
 		elif Telugu is not None and Hindi is None and Marathi is None:
+			user_details = {}
 			for object in object_list:
 				entry = object.get('fields','')
 				sno = object.get('pk','')
@@ -293,10 +442,18 @@ def manage_datasets(request):
 					set_name =entry.get('set_name')
 					deadline =entry.get('deadline')
 					last_updated =entry.get('last_updated')
-					base.append({'username':username,'dataset_path':dataset_path,
+					if username not in user_details:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
 						'task_name':task_name,'set_name':set_name,'deadline':deadline,
-						'last_updated':last_updated,'sno':sno})
-			context['task_folders']=base
+						'last_updated':last_updated,'sno':sno,}
+					if user_details[username]['sno']<sno:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
+						'task_name':task_name,'set_name':set_name,'deadline':deadline,
+						'last_updated':last_updated,'sno':sno,}
+					# base.append({'username':username,'dataset_path':dataset_path,
+					# 	'task_name':task_name,'set_name':set_name,'deadline':deadline,
+					# 	'last_updated':last_updated,'sno':sno,})
+			context['task_folders']=user_details.values()
 			return render(request,'manage_dataset.html',context)
 		elif Telugu is None and Hindi is not None and Marathi is None:
 			for object in object_list:
@@ -308,10 +465,15 @@ def manage_datasets(request):
 					set_name =entry.get('set_name')
 					deadline =entry.get('deadline')
 					last_updated =entry.get('last_updated')
-					base.append({'username':username,'dataset_path':dataset_path,
+					if username not in user_details:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
 						'task_name':task_name,'set_name':set_name,'deadline':deadline,
-						'last_updated':last_updated})
-			context['task_folders']=base
+						'last_updated':last_updated,'sno':sno,}
+					if user_details[username]['sno']<sno:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
+						'task_name':task_name,'set_name':set_name,'deadline':deadline,
+						'last_updated':last_updated,'sno':sno,}
+			context['task_folders']=user_details.values()
 			return render(request,'manage_dataset.html',context)
 		elif Telugu is None and Hindi is None and Marathi is not None:
 			for object in object_list:
@@ -323,10 +485,15 @@ def manage_datasets(request):
 					set_name =entry.get('set_name')
 					deadline =entry.get('deadline')
 					last_updated =entry.get('last_updated')
-					base.append({'username':username,'dataset_path':dataset_path,
+					if username not in user_details:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
 						'task_name':task_name,'set_name':set_name,'deadline':deadline,
-						'last_updated':last_updated})
-			context['task_folders']=base
+						'last_updated':last_updated,'sno':sno,}
+					if user_details[username]['sno']<sno:
+						user_details[username] = {'username':username,'dataset_path':dataset_path,
+						'task_name':task_name,'set_name':set_name,'deadline':deadline,
+						'last_updated':last_updated,'sno':sno,}
+			context['task_folders']=user_details.values()
 			return render(request,'manage_dataset.html',context)
 
 

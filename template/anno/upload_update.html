@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+{% load static %}
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Upload File</title>
+    <link rel="stylesheet" href="{% static 'css_js/bootstrap.min.css' %}">
+    <script src="{% static 'css_js/bootstrap.bundle.min.js' %}"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.4/jquery.min.js"></script>
+    <style>
+        * {
+            padding: 0px;
+            margin: 0px;
+            box-sizing: border-box;
+        }
+    </style>
+
+</head>
+<body>
+    <h1 class="text-center">Upload File</h1>
+    {% for message in messages %}
+    <p>{{message}}</p>
+    {%endfor%}
+    <div class="container">
+    <form method="post" enctype="multipart/form-data">
+        {%csrf_token%}
+        <div>
+            <label class="form-label mt-3" for='upload'>Upload File</label>
+            <input type="File" name="upload" accept=".jsonl" class="form-control" id='upload'>
+        </div>
+        
+        <div>
+            <label class="form-label mt-3">taskname</label>
+            <input type="text" name="task_name" class="form-control">
+        </div>
+        <div>
+            <label class="form-label mt-3">setname</label>
+            <input type="text" name="set_name" class="form-control">
+        </div>
+        <div>
+            <label class="form-label mt-3">language</label>
+            <select name="languageSelect" id="languageSelect">
+                <option value="" disabled selected>Select a language</option>
+                <option value="hindi">Hindi</option>
+                <option value="telugu">Telugu</option>
+                <option value="marathi">Marathi</option>
+            </select>
+        </div>
+        <div>
+            <div>
+                <label class="form-label mt-3">Choose user email</label>
+                <select name="user_email" id="userEmailSelect">
+                    {% for email in context.telugu %}
+                        <option value="{{ email }}">{{ email }}</option>
+                    {% endfor %}
+                    <option value="" disabled selected>Select user email</option>
+                </select>
+            </div>
+
+        </div>
+        <div>
+            <label class="form-label mt-3">deadline</label>
+            <input type="datetime-local" name="deadline" >
+        </div>
+        <button type="submit" class="btn btn-primary">Submit</button>
+    </form>
+    </div>
+    {% for email in context.telugu %}
+    <p>{{ email }}</p>
+{% endfor %}
+
+{% for email in context.hindi %}
+    <p>{{ email }}</p>
+{% endfor %}
+
+{% for email in context.marathi %}
+    <p>{{ email }}</p>
+{% endfor %}
+
+    <script>
+        
+    </script>
+    
+</body>
+
+</html>
+    
+

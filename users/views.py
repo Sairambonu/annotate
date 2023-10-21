@@ -32,7 +32,7 @@ def user_login(request):
             if user.status=='active':
                 login(request, user)
                 messages.success(request, 'Logged in successfully.')
-                return redirect('endpoint')
+                return redirect('annotates')
             else:
                 context['error'] = 'Your account is inactive. Please contact the coordinator'
         else:
@@ -145,6 +145,18 @@ def manage_users(request):
     
     return render(request, 'manage_users.html', {'users': users})
 
+def act_deact(request,username):
+    username = str(username)
+    user = UserLoginInfo.objects.get(username=username)
+    if user.status=='active':
+        user.status='deactive'
+    else:
+        user.status='active'
+    user.save()
+    return redirect('manage_users')
+
+def contact(request):
+    return render(request, 'contact.html')
 def endpoint(request):
     return render(request,'endpoint.html')
 
