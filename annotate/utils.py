@@ -31,6 +31,7 @@ def write_as_jsonl(out_filename, listOfDicts, order_display=False):
             for each in listOfDicts:
                 if order_display:
                     each['wb_display'] = str(wb_index)
+                    each['status']=''
                 json.dump(each, outfile, ensure_ascii=False)
                 outfile.write('\n')
                 wb_index += 1
@@ -96,13 +97,15 @@ def load_annotation_files(request):
         deadline = dataset.deadline
         status = dataset.status
         dataset_path = dataset.dataset_path
+        last_updated = dataset.last_updated
 
         if email == request.user.email:
             user_check = True
 
         if user_check:
             base.append({'sno': sno, 'email': email, 'language': language,
-                         'task_name': task_name, 'dataset_path': dataset_path, 'deadline': deadline, 'status': status})
+                         'task_name': task_name, 'dataset_path': dataset_path, 'deadline': deadline, 
+                         'status': status,'last_updated':last_updated})
 
     return base
 

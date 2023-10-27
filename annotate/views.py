@@ -12,6 +12,7 @@ from .utils import *
 import os
 from time import gmtime, strftime
 from django.views.decorators.csrf import csrf_exempt
+from datetime import datetime
 # Create your views here.
 
 
@@ -39,21 +40,17 @@ def upload(request):
 		
 		
 		if use_email is not None:
-			if path.exists(json_path):
-				messages.error(request, 'file already exists')
-				return render(request,'anno/upload.html')
-			else:
-				datas = read_jsonl_str(file)
-				checkfile = write_as_jsonl(json_path,datas,order_display=True)
-				if checkfile:
-					Datasets.objects.create(dataset_path=filename, language=language, 
-						task_name=task_name, set_name=set_name, user_email=user_email, 
-						deadline=deadline)
+			datas = read_jsonl_str(file)
+			checkfile = write_as_jsonl(json_path,datas,order_display=True)
+			if checkfile:
+				Datasets.objects.create(dataset_path=filename, language=language, 
+					task_name=task_name, set_name=set_name, user_email=user_email, 
+					deadline=deadline)
 
-					messages.success(request, 'File stored successfully!')
-					return redirect('manage_datasets')
-				else:
-					messages.error(request, 'File storage failed!')
+				messages.success(request, 'File stored successfully!')
+				return redirect('manage_datasets')
+			else:
+				messages.error(request, 'File storage failed!')
 			return render(request,'anno/upload.html')
 		else:
 			messages.info(request, "User session expired.!")
@@ -215,6 +212,9 @@ def predisplay(request, fileid):
 	request.session['sno'] = sno
 	context ={}
 	database_info = Datasets.objects.get(sno=sno)
+	formatted_datetime = datetime.now().isoformat()
+	database_info.last_updated = formatted_datetime
+	database_info.save()
 	filename = database_info.dataset_path
 	json_path = str(settings.BASE_DIR)+ "/static/datasets/"+str(filename)
 	context['articles'], implicit_check = read_jsonl(json_path, return_ids=True)
@@ -257,7 +257,7 @@ def save_data_back(mrpairs, lrpairs, json_path, wb_display):
     try:
         data, implicit_check = read_jsonl(json_path)
         for i in range(len(data)):
-            if wb_display == data[i]['set_id']:
+            if wb_display == data[i]['wb_display']:
                 is_golden = data[i].get('is_golden', False)
                 implicit_check = int(data[i].get('attempts', 0))
                 output = data[i].get('output', {})
